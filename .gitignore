@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Instagram personal data exports
+/_ig-data/
+followers_1.json
+following.json
