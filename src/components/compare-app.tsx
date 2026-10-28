@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   detectFileKind,
   findNotFollowingBack,
@@ -46,7 +46,6 @@ export function CompareApp() {
   const [hideReviewed, setHideReviewed] = useState(true);
   const [hidden, setHidden] = useState<Set<string>>(() => readHidden());
   const [copied, setCopied] = useState(false);
-  const [hasLocalData, setHasLocalData] = useState(false);
 
   const followersInput = useRef<HTMLInputElement>(null);
   const followingInput = useRef<HTMLInputElement>(null);
@@ -74,50 +73,6 @@ export function CompareApp() {
   }, [notFollowingBack, query, sort, hideReviewed, hidden]);
 
   const ready = followers.length > 0 && following.length > 0;
-
-  async function loadParsedData(
-    followersData: unknown,
-    followingData: unknown,
-    followersName = "followers_1.json",
-    followingName = "following.json",
-  ) {
-    const parsedFollowers = parseInstagramFile(followersData);
-    const parsedFollowing = parseInstagramFile(followingData);
-
-    if (parsedFollowers.length === 0 || parsedFollowing.length === 0) {
-      setError("No pude leer cuentas en los archivos locales.");
-      return;
-    }
-
-    setFollowers(parsedFollowers);
-    setFollowing(parsedFollowing);
-    setFollowersFile({ name: followersName, count: parsedFollowers.length });
-    setFollowingFile({ name: followingName, count: parsedFollowing.length });
-    setError(null);
-  }
-
-  useEffect(() => {
-    void fetch("/api/local-data")
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (data?.followers && data?.following) setHasLocalData(true);
-      })
-      .catch(() => undefined);
-  }, []);
-
-  async function loadLocalProjectFiles() {
-    setError(null);
-    const response = await fetch("/api/local-data");
-    if (!response.ok) {
-      setError("No encontré followers_1.json y following.json en _ig-data.");
-      return;
-    }
-    const data = (await response.json()) as {
-      followers: unknown
-      following: unknown
-    };
-    await loadParsedData(data.followers, data.following);
-  }
 
   async function ingestFiles(files: File[]) {
     setError(null);
@@ -203,7 +158,7 @@ export function CompareApp() {
         <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-400">
           Cargá <code className="text-zinc-200">followers_1.json</code> y{" "}
           <code className="text-zinc-200">following.json</code> de tu
-          exportación de Instagram. Te armo la lista de cuentas que seguís y no
+          exportación de Instagram. Se generará una lista de cuentas que seguís y no
           te siguen, con el link directo al perfil para dejar de seguirlas.
         </p>
       </header>
@@ -248,15 +203,6 @@ export function CompareApp() {
             event.target.value = "";
           }}
         />
-        {hasLocalData ? (
-          <button
-            type="button"
-            onClick={() => void loadLocalProjectFiles()}
-            className="rounded-3xl border border-white/10 bg-white/[0.03] px-5 py-4 text-left text-sm text-zinc-300 transition hover:bg-white/[0.06] md:col-span-2"
-          >
-            Usar los JSON que ya están en esta carpeta
-          </button>
-        ) : null}
       </section>
 
       {error ? (

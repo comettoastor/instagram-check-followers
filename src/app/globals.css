@@ -15,19 +15,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  background: var(--background);
+}
+
 html,
 body {
   min-height: 100%;
 }
 
 body {
-  background:
-    radial-gradient(900px 480px at 10% -10%, rgba(245, 133, 41, 0.16), transparent 55%),
-    radial-gradient(700px 420px at 92% 0%, rgba(193, 53, 132, 0.2), transparent 50%),
-    radial-gradient(640px 380px at 50% 110%, rgba(131, 58, 180, 0.16), transparent 45%),
-    var(--background);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 480px at 10% -8%, rgba(245, 133, 41, 0.16), transparent 55%),
+    radial-gradient(700px 420px at 92% 0%, rgba(193, 53, 132, 0.2), transparent 50%),
+    radial-gradient(640px 380px at 70% 85%, rgba(131, 58, 180, 0.14), transparent 50%);
 }
 
 ::selection {
